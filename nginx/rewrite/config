@@ -1,0 +1,25 @@
+server {
+  listen localhost:10080;
+
+  root /var/www/testing-rewrite;
+  index index.html;
+  
+  error_log /var/log/nginx/testing-rewrite-error.log debug;
+  rewrite_log on;
+
+  access_log /var/log/nginx/testing-rewrite-access.log;
+
+  location /wiki/ {
+    index sample_res.html;
+    rewrite ^/wiki/([^?]*)(?:\?.*)? /sample_res.html?title=$1 last;
+  }
+  
+  location ~ /products/(.+) {
+    rewrite ^/products/(.*)$ /$1 last;
+  }
+
+  location = /products/ {
+    rewrite ^/products/$ /prods/ last;
+    index index.html;
+  }
+}
