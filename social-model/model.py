@@ -4,6 +4,7 @@ from random import random, uniform
 
 
 class GlobalState:
+    """Global state definition, as a model of population."""
     _nodes = []
 
     def nodes(self):
@@ -14,6 +15,11 @@ class GlobalState:
 
 
 class Citizen:
+    """Each node representation. Citizen has:
+opinion - like party choice
+action - which determines if change of option is more comfortable
+neighbors - as a edges in graph connected to this node
+    """
     def __init__(self, opinion, action, pos=(0, 0)):
         self.opinion = opinion
         self.action = action
@@ -26,18 +32,18 @@ class Citizen:
         return globalState.neighbors(self)
 
 
-def socialremake(globalState, node, b):
+def socialRemake(globalState, node, referenceLevel):
     neig = globalState.neighbors(node)
-    notneigh = [n for n in globalState.nodes() if n not in neig]
+    notNeigh = [n for n in globalState.nodes() if n not in neig]
 
     rand = uniform(1, 6)
-    if rand < b:
-        lmnotneigh = [m for m in notneigh if node.opinion - m.action <= 0.5 and node.opinion - m.action >= -0.5]
+    if rand < referenceLevel:
+        lmnotneigh = [m for m in notNeigh if node.opinion - m.action <= 0.5 and node.opinion - m.action >= -0.5]
         for d in lmnotneigh:
             globalState.add_edge(node, d)
             print("edge added")
             break
-    if rand > b:
+    if rand > referenceLevel:
         diffneig = [l for l in neig if node.opinion - l.opinion > 0.5 or node.opinion - l.opinion < -0.5]
         for f in diffneig:
             globalState.remove_edge(node, f)
@@ -45,7 +51,7 @@ def socialremake(globalState, node, b):
             break
 
 
-def dif_ind_neigh(globalState, node, referenceLevel):
+def differeciateIndividualNeighbor(globalState, node, referenceLevel):
     logger = logging.getLogger('dif_ind_neigh')
     rand = uniform(0, 1)
     logger.debug(" dice " + str(rand))
@@ -96,8 +102,9 @@ def main():
     for timestep in range(100):
         troubled = [t for t in globalState.nodes() if t.opinion - t.action >= 0.5 or t.opinion - t.action <= -0.5]
         for node in troubled:
-            socialremake(globalState, node, 0.7)
-            dif_ind_neigh(globalState, node, 0.5)
+            socialRemake(globalState, node, 0.7)
+            differeciateIndividualNeighbor(globalState, node, 0.5)
 
 
-main()
+if __name__ == "__main__":
+    main()
