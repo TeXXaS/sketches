@@ -126,13 +126,14 @@ def main():
     globalState = GlobalState()
     nodes = globalState.getNodes()
     logger.info('generating nodes')
-    for idx in range(100):
+    for idx in range(10):
         nodes.append(prepare_random_citizen(idx))
     logger.info('generating edges')
     for node in globalState.getNodes():
-        for idx in range(10):
-            otherEnd = nodes[int(uniform(0,len(nodes)))]
+        for idx in range(1,4):
+            otherEnd = nodes[(node.id + idx) % 10]
             globalState.addEdge(node, otherEnd)
+    logger.info("stating with: nodes - %d, edges - %d", len(globalState.getNodes()), len(globalState.getEdges()))
 
     logger.info('processing')
     for timestep in range(100):
